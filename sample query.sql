@@ -30,3 +30,7 @@ LIMIT 2;
 
 SELECT * FROM orders
 WHERE ord_date BETWEEN '2008-07-01' AND '2008-07-20'
+
+SELECT customer.CUST_NAME, customer.PAYMENT_AMT, agents.AGENT_NAME FROM customer JOIN agents ON customer.AGENT_CODE = agents.AGENT_CODE
+GROUP BY agents.AGENT_NAME
+
