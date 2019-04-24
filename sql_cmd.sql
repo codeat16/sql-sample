@@ -4,23 +4,23 @@ WHERE ratio > 0.70, name = 'John'
 ORDER BY ratio, p DESC, c
 LIMIT 10
 
-# option for WHERE
-# %: any
+-- option for WHERE
+-- %: any
 LIKE '%abc%'
 
-# --- not tested ---
-# SQL is case insensitive
-# To do case sensitive search using LIKE, use COLLATE Latin1_General_BIN
+-- --- not tested ---
+-- SQL is case insensitive
+-- To do case sensitive search using LIKE, use COLLATE Latin1_General_BIN
 SELECT name
 FROM Person
 WHERE name LIKE '%A'
 COLLATE Latin1_General_BIN;
-# or COLLATE Latin1_General_CS_AS
+-- or COLLATE Latin1_General_CS_AS
 
-# in a set
+-- in a set
 IN ('A', 'B', 'C')
 
-# BETWEEN is inclusive
+-- BETWEEN is inclusive
 date_ BETWEEN '2016-01-01' AND '2017-01-01'
 
 (a>3 OR b<2) AND c>5
@@ -30,10 +30,10 @@ IS NOT NULL
 
 
 
-## JOIN
+-- JOIN
 JOIN table2 ON table1.id2 = table2.id2
 
-# JOIN with inequity operation (e.g, comparision)
+-- JOIN with inequity operation (e.g, comparision)
 JOIN table2 ON table1.id2 = table2.id2 AND a>b
 
 LEFT JOIN  # same as LEFT OUTER JOIN
@@ -41,51 +41,53 @@ RIGHT JOIN # same as RIGHT OUTER JOIN
 OUTER JOIN # same as FULL OUTER JOIN
 FULL OUTER JOIN = FULL JOIN
 
-#
+--
 FROM table t1
 LEFT JOIN table t2 ON t1.id=t2.id
 AND t1.occurred_at > t2.occurred_at
 AND t1.occurred_at >= t2.occurred_at + INTERVAL '28 days'
 
-# OUTER Join that exclude inner
+-- OUTER Join that exclude inner
 FULL OUTER JOIN with WHERE A.Key IS NULL OR B.Key IS NULL
 
-# table name alias
+-- table name alias
 FROM table t
 JOIN table table
 
 
-
+--
 SELECT DISTINCT
 
 
-# aggregate functions
+-- aggregate functions
 SELECT COUNT(), SUM(), AVG(), MIN(), MAX()
+-- can use wildcard
+COUNT(*)
 
-
-#
+-- When using group by, cannot select the individual field anymore. Only aggregate functions of those individual fields are allowed.
+-- to add on them is needed 
 GROUP BY var
 GROUP BY 1 (column number)
 
-#
-SELECT DISTINCT
 
 
-# to use conditional on aggregate function
+
+-- to use conditional on aggregate function
 HAVING SUM(a)>100
 
-## DATE FUNCTIONS
-# DATE_TRUNC understands the keyword and look for the specific and reset other elements into 'zero', result is still in date format 
-# and can be worked on.
-# DATE_PART cut them into substring and is no longer in date format
+-- DATE_TRUNC reduces precision but still gives a datetime type
+-- DATE_TRUNC understands the keyword and look for the specific and reset other elements into 'zero', result is still in date format 
+--   and can be worked on.
+-- DATE_PART extract datetime into substring and is no longer in date format
 SELECT DATE_TRUNC('day', datetimedata)
 SELECT DATE_TRUNC('month', datetimedata)
 SELECT DATE_TRUNC('year', datetimedata)
 SELECT DATE_PART('second', datetimedata)
-# dow: Day of Week
+-- dow: Day of Week
 SELECT DATE_PART('dow', datetimedata)
 
-#
+-- CASE is used to create a new variable.
+-- Example below use CASE to create a categorical value
 SELECT abc
 	CASE WHEN a<100 THEN 'less than 100' ELSE 'more than 100' END as hundred
 	
@@ -96,22 +98,25 @@ SELECT abc
 	 WHEN a<100 THEN 'less than 100'
 	END as quartile
 	
-# subquery, most can select portion and run to test (like spss)
-# xxx is alias of inner query
+-- subquery, most can select portion and run to test (like spss)
+-- xxx is alias of inner query
+-- To use it, place the whole "(....) sub_name" to where the table name is.
+-- The field names namespace are now 1st level.
 SELECT *
 FROM 
 (
 another query 
-) xxx
+) sub_name
 
-
-# Common Table Expression
+-- Using subquery
+-- Common Table Expression
 WITH _alias1_ AS (sub query1 here),
 	 _alias2_ AS (sub query2 here)
 SELECT *
 FROM _alias1_
 
-# String fuctions
+
+-- String functions
 LEFT(string, n) AS l
 RIGHT(string, n) AS r
 LENGTH(string)
@@ -122,7 +127,7 @@ POSITION('x' IN string) = STRPOS(string, 'x')   # case sensitive
 CONCAT(firstname, ' ', lastname) = firstname || ' ' || lastname
 SUBSTR(string, from, count)
 
-# CAST - like C++ type cast
+-- CAST - like C++ type cast
 CAST(string AS date) as _datename_  =   (string)::date as _datename_
 
 
