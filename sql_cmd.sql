@@ -8,6 +8,16 @@ LIMIT 10
 -- %: any
 LIKE '%abc%'
 
+-- show data type
+SELECT COLUMN_NAME, DATA_TYPE 
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE 
+     TABLE_NAME = 'yourTableName' AND 
+-- optional
+     COLUMN_NAME = 'yourColumnName'
+	 
+	 
+
 -- --- not tested ---
 -- SQL is case insensitive
 -- To do case sensitive search using LIKE, use COLLATE Latin1_General_BIN
@@ -70,10 +80,11 @@ GROUP BY var
 GROUP BY 1 (column number)
 
 
-
-
 -- to use conditional on aggregate function
+GROUP BY ...
 HAVING SUM(a)>100
+...
+
 
 -- DATE_TRUNC reduces precision but still gives a datetime type
 -- DATE_TRUNC understands the keyword and look for the specific and reset other elements into 'zero', result is still in date format 
@@ -116,50 +127,75 @@ SELECT *
 FROM _alias1_
 
 
--- String functions
+-- String functions, case insensitive
 LEFT(string, n) AS l
 RIGHT(string, n) AS r
 LENGTH(string)
 UPPER(string)
 LOWER(string)
-POSITION('x' IN string) = STRPOS(string, 'x')   # case sensitive
+POSITION('x' IN string)
 
-CONCAT(firstname, ' ', lastname) = firstname || ' ' || lastname
+-- CONCAT
+CONCAT(firstname, ' ', lastname) 
+-- Use literal to concat, same result as above
+firstname || ' ' || lastname
+
+-- SUBSTR index starting from 1
 SUBSTR(string, from, count)
 
--- CAST - like C++ type cast
-CAST(string AS date) as _datename_  =   (string)::date as _datename_
+-- CAST type cast
+-- cast a field named 'string' into date format
+CAST(string AS date) as _datename_
+
+-- CAST using :: in PostgreSQL
+(string)::date as _datename_
 
 
-# COALESCE
+# COALESCE 合并
 COALESCE(expr1, expr2, ..., exprn)
 return the 1st non-null expression
 
 
-# Window function
-#
-# after OVER can use PARTITION BY, ORDER BY, or no statement 
-# *** Without ORDER BY, there won't be effect of running totals.
+-- Window function
+--
+-- after OVER can use PARTITION BY, ORDER BY, or no statement 
+-- *** Without ORDER BY, there won't be effect of running totals.
+SELECT empno, salary, AVG(salary) OVER (PARTITION BY depname) FROM empsalary;
 
-SELECT depname, empno, salary, avg(salary) OVER (PARTITION BY depname) FROM empsalary;
-ROW_NUMBER() OVER win
-RANK() OVER win   # 1, 2, 2, 4
-DENSE_RANK() OVER win # 1, 2, 2, 3
+-- Calcualte running sum of salary of all employees up to this row
+SELECT empno, salary, SUM(salary) OVER (ORDER BY empno) FROM empsalary;
 
-# Window alias
-SELECT depname, empno, salary, avg(salary) OVER win FROM empsalary;
-WINDOW win AS (PARTITION BY depname)
 
-# row selection
-LAG(row) OVER win # previous row
-LEAD(row) OVER win # next row
 
-# percentile
-NTILE(4) OVER win # quartile
-NTILE(5) OVER win # quintile
-NTILE(100) OVER win # percentile
+-- Window
+OVER ()  -- this will calucalte for all
 
-# UNION
+ROW_NUMBER() OVER ()
+RANK() OVER ()   		-- 1, 2, 2, 4
+DENSE_RANK() OVER () 	-- 1, 2, 2, 3
+
+-- row selections 
+LAG(row) OVER win 		-- previous row
+LEAD(row) OVER win 		-- next row
+
+-- percentile
+NTILE(4) OVER win 		-- quartile
+NTILE(5) OVER win 		-- quartile
+NTILE(100) OVER win 	-- quartile
+
+-- Window alias
+SELECT ...
+	SUM(xx) OVER win1,
+	AVG(yy) OVER win1,
+	COUNT(zz) OVER win2
+FROM ...
+WINDOW win1 AS (...)
+WINDOW win2 AS (...)
+
+
+
+-- append rows instead of by columns as in JOIN
+-- UNION
 SELECT
 FROM
 UNION ALL
@@ -167,5 +203,6 @@ SELECT
 FROM
 
 
-# perormance tuning
+-- perormance tuning
+-- EXPLAIN will print out a query plan
 EXPLAIN
