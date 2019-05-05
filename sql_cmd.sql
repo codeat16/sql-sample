@@ -2,7 +2,11 @@ SELECT p, c, ratio, name p/c AS R
 FROM pcv
 WHERE ratio > 0.70, name = 'John'
 ORDER BY ratio, p DESC, c
-LIMIT 10
+LIMIT 10 OFFSET 5
+
+-- not equal
+a <> 100
+
 
 -- option for WHERE
 -- %: any
@@ -80,6 +84,8 @@ GROUP BY var
 GROUP BY 1 (column number)
 
 
+-- The HAVING clause was added to SQL because the WHERE keyword could not be used
+-- with aggregate functions.
 -- to use conditional on aggregate function
 GROUP BY ...
 HAVING SUM(a)>100
@@ -125,6 +131,12 @@ WITH _alias1_ AS (sub query1 here),
 	 _alias2_ AS (sub query2 here)
 SELECT *
 FROM _alias1_
+
+-- VIEW
+CREATE VIEW view_name AS
+-- full query following
+-- SELECT ...
+
 
 
 -- String functions, case insensitive
@@ -206,3 +218,70 @@ FROM
 -- perormance tuning
 -- EXPLAIN will print out a query plan
 EXPLAIN
+
+
+
+-- Populate table 
+-- COPY
+CREATE TABLE country (
+    name TEXT NOT NULL,
+    two_letter TEXT PRIMARY KEY,
+    country_id integer NOT NULL
+);
+
+COPY country FROM STDIN (DELIMITER '|');
+United States|US|1
+China|CN|86
+\.
+
+--
+--
+
+CREATE TABLE spy (
+    date DATE NOT NULL PRIMARY KEY,
+    Open FLOAT NOT NULL,
+    High FLOAT NOT NULL,
+    Low FLOAT NOT NULL,
+    Close FLOAT NOT NULL,
+    Adj_Close FLOAT NOT NULL,
+	Volume INT NOT NULL
+);
+
+COPY spy FROM '/vagrant/sql-sample/SPY.csv' (DELIMITER ',');
+-- ERROR:  must be superuser to COPY to or from a file
+-- Try the following, still no go
+-- ALTER ROLE vagrant WITH SUPERUSER;
+
+To enter psql as super user you need to: (has to use postgres user which is PostgreSQL admin)
+sudo -u postgres psql
+
+If there is no user called postgres you need to create it on system first, with:
+sudo adduser newuser
+
+-- This makes copy works.
+
+
+-- INSERT
+-- all values for a row have to be supplied
+--
+-- use different columns order
+INSERT INTO table (col1, col2) VALUES (val1, val2)
+-- for regular column order
+INSERT INTO table VALUES (val1, val2)
+
+
+-- FOREIGN KEY
+CREATE TABLE students (
+	id serial PRIMARY KEY,
+	name text);
+	
+CREATE TABLE courses (
+	id text PRIMARY KEY,
+	name text);
+	
+CREATE TABLE grades (
+	student integer REFERENCES students(id),
+	course text REFERENCES courses(id),
+	grade text);
+	
+
